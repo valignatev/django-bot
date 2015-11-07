@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    {% block content %}
+    <form name="introduce" action="/" method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+            <p>Your username and password didn't match. Please try again.</p>
+        {% endif %}
+        {{ form.as_p }}
+        <input type="submit" value="Это я!" />
+    </form>
+    {% endblock %}
+</body>
+</html>
