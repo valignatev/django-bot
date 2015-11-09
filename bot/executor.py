@@ -1,5 +1,6 @@
 #! -*- coding: utf-8 -*-
 import threading
+import time
 from urllib.request import urlopen, HTTPError
 
 from django.utils import timezone
@@ -58,7 +59,14 @@ class Executor:
         pass
 
     def remind(self):
-        pass
+        phrase, timer = self.user_param.strip().split('через')
+        count, measure = timer.strip().split(' ')
+        if 'минут' in measure:
+            count = int(count) * 60
+        elif 'секунд' in measure:
+            count = int(count)
+        time.sleep(count)
+        self.send_message('Напоминаю: {phrase}'.format(phrase=phrase))
 
     def get_all_titles(self):
         message = 'Заголовки {titles} с сайта {sites}'
