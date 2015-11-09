@@ -1,10 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form action="/bot/" name="bot" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Отправить">
-    </form>
+  <div id="hi">Привет, {{ username }}</div>
+  <div id="chatbox">
 
+  </div>
+  <form action="/bot/" name="bot" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Отправить">
+  </form>
+  <script>
+    var form = $('form');
+    var action = form.attr('action');
+    $(document).ready(function() {
+      $(form).submit(function(event) {
+        event.preventDefault();
+        $.post(action, form.serialize())
+          .done(function(data) {
+            $('<div/>', {
+              class: 'message',
+              text: data.command
+            }).appendTo('#chatbox');
+            $('<div/>', {
+              class: 'message',
+              text: data.message
+            }).appendTo('#chatbox');
+          });
+      });
+    });
+  </script>
 {% endblock %}

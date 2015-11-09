@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
 <body>
     {% block content %}
     <form name="introduce" action="/" method="post">
         {% csrf_token %}
-        {% if form.errors %}
-            <p>Your username and password didn't match. Please try again.</p>
-        {% endif %}
         {{ form.as_p }}
         <input type="submit" value="Это я!" />
     </form>
     {% endblock %}
 </body>
 </html>
+
