@@ -9,6 +9,7 @@ from omnibus.api import publish
 
 from .models import Bot
 
+
 class Executor:
 
     def __init__(self, method, user_param):
@@ -60,9 +61,25 @@ class Executor:
         pass
 
     def get_all_titles(self):
+        message = 'Заголовки {titles} с сайта {sites}'
         urls = self.user_param.strip().split(',')
-        titles = []
+        founds = []
+        missings = []
+
         for url in urls:
-            self.user_param = url
-            titles.append(self.get_title())
-        return titles
+            try:
+                soup = self._get_html(url)
+                founds.append((soup.title.text, url))
+            except AttributeError:
+                missings.append(('title на {url} отсутствует'.format(
+                    url=self.user_param), url))
+            except HTTPError as e:
+                missings.append((e.msg, url))
+
+        titles, sites = zip(*founds)
+        message = message.format(titles=', '.join(titles),
+                                 sites=', '.join(sites))
+        self.send_message(message)
+
+        for missing in missings:
+            self.send_message(missing)
