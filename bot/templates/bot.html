@@ -3,7 +3,9 @@
 {% block content %}
   <div id="hi">Привет, {{ username }}</div>
   <div id="chatbox">
-
+    {% for msg in history %}
+      <div class="message">{{ msg }}</div>
+    {% endfor %}
   </div>
   <form action="/bot/" name="bot" method="post">
     {% csrf_token %}
@@ -20,11 +22,11 @@
           .done(function(data) {
             $('<div/>', {
               class: 'message',
-              text: data.command
+              text: data.human_message
             }).appendTo('#chatbox');
             $('<div/>', {
               class: 'message',
-              text: data.message
+              text: data.bot_message
             }).appendTo('#chatbox');
           });
       });

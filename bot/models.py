@@ -6,7 +6,13 @@ class Human(models.Model):
 
 
 class Bot(models.Model):
-    command = models.TextField(verbose_name='Введите команду')
+    nickname = models.CharField(max_length=20)
+    date = models.DateTimeField()
+    message = models.TextField(verbose_name='Введите команду')
+
+    def __str__(self):
+        date = self.date.strftime('%d.%m.%Y %H:%M:%S')
+        return ' '.join([date, self.nickname, ':', str(self.message)])
 
 
 class Command(models.Model):

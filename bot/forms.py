@@ -14,5 +14,5 @@ class BotForm(forms.ModelForm):
 
     class Meta:
         model = Bot
-        fields = ('command',)
+        fields = ('message',)
 

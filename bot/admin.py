@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Command
+from .models import Command, Bot
 
 
 class CommandAdmin(admin.ModelAdmin):
@@ -8,3 +8,4 @@ class CommandAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Command, CommandAdmin)
+admin.site.register(Bot)
