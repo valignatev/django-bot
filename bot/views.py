@@ -68,7 +68,7 @@ class BotView(TemplateView):
         if not request.session.get('human'):
             return HttpResponseRedirect('/')
 
-        history = Bot.objects.all().order_by('-date')[:5]
+        history = Bot.objects.all().order_by('date')[:5]
         if history:
             context['history'] = [i.__str__() for i in history]
         context['username'] = request.session['human']
