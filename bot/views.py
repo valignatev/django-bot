@@ -5,7 +5,7 @@ import json
 from django.shortcuts import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView
 
-from .models import Bot, Commands
+from .models import Bot, Command
 from .forms import HumanForm, BotForm
 from .executor import Executor
 
@@ -38,7 +38,7 @@ class BotView(TemplateView):
         return ' '.join([date, name, '\b:', str(message)])
 
     def process_comand(self, cmd, username):
-        command = [c for c in Commands.objects.all() if c.command in cmd]
+        command = [c for c in Command.objects.all() if c.command in cmd]
         if command:
             method = command[0].method
             user_param = cmd.replace(command[0].command, '').strip()

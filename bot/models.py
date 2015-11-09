@@ -9,7 +9,9 @@ class Bot(models.Model):
     command = models.TextField(verbose_name='Введите команду')
 
 
-class Commands(models.Model):
+class Command(models.Model):
     command = models.CharField(max_length=255)
     method = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.command
