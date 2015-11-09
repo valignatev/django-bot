@@ -21,3 +21,9 @@ class Command(models.Model):
 
     def __str__(self):
         return self.command
+
+
+class Queue(models.Model):
+    command = models.ForeignKey(Command)
+    user_param = models.CharField(max_length=255, blank=True)
+    date = models.DateTimeField()

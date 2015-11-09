@@ -5,6 +5,8 @@ from django.shortcuts import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView
 from django.utils import timezone
 
+from omnibus.api import publish
+
 from .models import Bot, Command
 from .forms import HumanForm, BotForm
 from .executor import Executor
@@ -36,6 +38,13 @@ class HomeView(TemplateView):
 
 
 class BotView(TemplateView):
+    # We need to send ping message because of omnibus always lost first message
+    publish(
+        'mychannel',
+        'message',
+        {'ping_message': 'ping'},
+        sender='server'
+    )
 
     template_name = 'bot.html'
 
