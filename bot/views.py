@@ -1,9 +1,9 @@
 #! -*- coding: utf-8 -*-
-import datetime
 import json
 
 from django.shortcuts import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView
+from django.utils import timezone
 
 from .models import Bot, Command
 from .forms import HumanForm, BotForm
@@ -40,7 +40,7 @@ class BotView(TemplateView):
     template_name = 'bot.html'
 
     def format_save_message(self, message, name):
-        date = datetime.datetime.now()
+        date = timezone.now()
         message = Bot.objects.create(message=message, date=date, nickname=name)
         return message
 
@@ -75,9 +75,11 @@ class BotView(TemplateView):
             human = request.session['human']
             message = form.data['message']
             human_message = self.format_save_message(message, human).__str__()
-            bot_message = self.process_comand(message).__str__()
-            data = json.dumps({'bot_message': bot_message,
-                               'human_message': human_message})
+            bot_message = self.process_comand(message)
+            data = {'human_message': human_message}
+            if bot_message:
+                data['bot_message'] = bot_message.__str__()
+            data = json.dumps(data)
 
             return HttpResponse(data, content_type='application/json')
         return HttpResponseRedirect('/bot/')
