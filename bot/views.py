@@ -39,18 +39,14 @@ class BotView(TemplateView):
 
     template_name = 'bot.html'
 
-    def format_save_message(self, message, name):
-        date = timezone.now()
-        message = Bot.objects.create(message=message, date=date, nickname=name)
-        return message
-
     def process_comand(self, cmd):
         command = [c for c in Command.objects.all() if c.command in cmd]
         if command:
             method = command[0].method
             user_param = cmd.replace(command[0].command, '').strip()
             message = Executor(method, user_param).execute()
-            return self.format_save_message(message, 'Бот')
+            return Bot.objects.create(message=message, date=timezone.now(),
+                                      nickname='Бот')
 
     def get(self, request, **kwargs):
         human = request.session.get('human')
@@ -74,9 +70,11 @@ class BotView(TemplateView):
         if form.is_valid():
             human = request.session['human']
             message = form.data['message']
-            human_message = self.format_save_message(message, human).__str__()
+            date = timezone.now()
+            human_message = Bot.objects.create(message=message, date=date,
+                                               nickname=human)
             bot_message = self.process_comand(message)
-            data = {'human_message': human_message}
+            data = {'human_message': human_message.__str__()}
             if bot_message:
                 data['bot_message'] = bot_message.__str__()
             data = json.dumps(data)

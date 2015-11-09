@@ -13,21 +13,38 @@
     <input type="submit" value="Отправить">
   </form>
   <script>
+
+    function addMessage(message) {
+      $('<div/>', {
+        class: 'message',
+        text: message
+      }).appendTo('#chatbox');
+    }
+
+    var transport = WebSocket;
+    var endpoint = '{{ OMNIBUS_ENDPOINT }}';
+    var options = {
+        authToken: '{{ OMNIBUS_AUTH_TOKEN }}'
+    };
+
+    var connection = new Omnibus(transport, endpoint, options);
+
     var form = $('form');
     var action = form.attr('action');
     $(document).ready(function() {
+
+      var channel = connection.openChannel('mychannel');
+      channel.on('message', function(event) {
+        addMessage(event.data.payload.message);
+      });
+
       $(form).submit(function(event) {
         event.preventDefault();
+
         $.post(action, form.serialize())
           .done(function(data) {
-            $('<div/>', {
-              class: 'message',
-              text: data.human_message
-            }).appendTo('#chatbox');
-            $('<div/>', {
-              class: 'message',
-              text: data.bot_message
-            }).appendTo('#chatbox');
+            addMessage(data.human_message);
+            addMessage(data.bot_message);
           });
       });
     });
