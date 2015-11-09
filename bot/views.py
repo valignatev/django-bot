@@ -39,7 +39,7 @@ class BotView(TemplateView):
 
     template_name = 'bot.html'
 
-    def process_comand(self, cmd):
+    def process_command(self, cmd):
         command = [c for c in Command.objects.all() if c.command in cmd]
         if command:
             method = command[0].method
@@ -73,7 +73,7 @@ class BotView(TemplateView):
             date = timezone.now()
             human_message = Bot.objects.create(message=message, date=date,
                                                nickname=human)
-            bot_message = self.process_comand(message)
+            bot_message = self.process_command(message)
             data = {'human_message': human_message.__str__()}
             if bot_message:
                 data['bot_message'] = bot_message.__str__()
