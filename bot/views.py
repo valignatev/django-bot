@@ -48,12 +48,12 @@ class BotView(TemplateView):
 
     template_name = 'bot.html'
 
-    def process_command(self, cmd):
+    def process_command(self, cmd, human):
         command = [c for c in Command.objects.all() if c.command in cmd]
         if command:
             method = command[0].method
             user_param = cmd.replace(command[0].command, '').strip()
-            message = Executor(method, user_param).execute()
+            message = Executor(method, user_param, human).execute()
             return Bot.objects.create(message=message, date=timezone.now(),
                                       nickname='Бот')
 
@@ -68,9 +68,9 @@ class BotView(TemplateView):
         if not request.session.get('human'):
             return HttpResponseRedirect('/')
 
-        history = Bot.objects.all().order_by('date')[:5]
+        history = Bot.objects.all().order_by('-date')[:5]
         if history:
-            context['history'] = [i.__str__() for i in history]
+            context['history'] = [i.__str__() for i in reversed(history)]
         context['username'] = request.session['human']
         return self.render_to_response(context)
 
@@ -82,7 +82,7 @@ class BotView(TemplateView):
             date = timezone.now()
             human_message = Bot.objects.create(message=message, date=date,
                                                nickname=human)
-            bot_message = self.process_command(message)
+            bot_message = self.process_command(message, human)
             data = {'human_message': human_message.__str__()}
             if bot_message:
                 data['bot_message'] = bot_message.__str__()
