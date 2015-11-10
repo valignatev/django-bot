@@ -7,9 +7,11 @@ class Human(models.Model):
 
 class BotManager(models.Manager):
     def last_human_message(self, human):
-        msg = super(BotManager, self).get_queryset().filter(
-            nickname=human).order_by('-date')[0]
-        return msg
+        try:
+            return super(BotManager, self).get_queryset().filter(
+                nickname=human).order_by('-date')[1]
+        except IndexError:
+            return []
 
 
 class Bot(models.Model):

@@ -9,7 +9,7 @@ from django.utils import timezone
 from bs4 import BeautifulSoup
 from omnibus.api import publish
 
-from .models import Bot, Storage
+from .models import Bot, Storage, Command
 
 
 def deep_getattr(obj, attr):
@@ -70,7 +70,30 @@ class Executor:
     def save_info(self):
         if self.user_param:
             Storage.objects.create(info=self.user_param)
-        self.send_message('Информация сохранена')
+            self.send_message('Информация сохранена')
+        else:
+            last_human_message = Bot.objects.last_human_message(self.human)
+            if not last_human_message:
+                self.send_message('Нечего сохранять')
+                return
+
+            last_command = [c for c in Command.objects.all() if
+                            c.command in last_human_message.message]
+            if not last_command:
+                self.send_message('Нечего сохранять')
+            else:
+                method = last_command[0].method
+                command = last_command[0].command
+
+                if method in ['get_title', 'get_h1']:
+                    self.user_param = last_human_message.message.replace(
+                        command, ''
+                    ).strip()
+                    content, url = getattr(self, method)(send=False)
+                    Storage.objects.create(info=', '.join([content, url]))
+                    self.send_message('Информация сохранена')
+                else:
+                    self.send_message('Нечего сохранять')
 
     def remind(self):
         phrase, timer = self.user_param.strip().split('через')
@@ -104,3 +127,9 @@ class Executor:
 
         for missing in missings:
             self.send_message(missing)
+
+    def show_storage(self):
+        day, month, year = self.user_param.split('.')
+        storage = Storage.objects.filter(date__day=day, date__month=month,
+                                         date__year=year)
+        self.send_message(', '.join([i.__str__() for i in storage]))
